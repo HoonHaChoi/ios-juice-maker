@@ -15,4 +15,23 @@ enum JuiceRecipeType: Hashable, CaseIterable {
     case strawberryBanananJuice
     case mangoJuice
     case mangoKiwiJuice
+    
+    var recipe: JuiceRecipe {
+        switch self {
+        case .strawberryJuice:
+            return .init(ingredients: [.init(fruit: .strawberry, number: 16)], name: .mangoKiwiJuice)
+        case .bananaJuice:
+            return .init(ingredients: [.init(fruit: .banana, number: 2)], name: .bananaJuice)
+        case .kiwiJuice:
+            <#code#>
+        case .pineappleJuice:
+            <#code#>
+        case .strawberryBanananJuice:
+            <#code#>
+        case .mangoJuice:
+            <#code#>
+        case .mangoKiwiJuice:
+            <#code#>
+        }
+    }
 }

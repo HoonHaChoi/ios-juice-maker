@@ -10,7 +10,7 @@ import Foundation
 enum Fruit: Hashable, CaseIterable {
     case strawberry
     case banana
+    case pineapple
     case kiwi
     case mango
-    case pineapple
 }

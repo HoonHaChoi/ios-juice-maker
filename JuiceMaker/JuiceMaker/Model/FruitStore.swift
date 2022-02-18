@@ -7,9 +7,9 @@
 import Foundation
 
 protocol Store {
-    mutating func increase(in fruit: Fruit) throws
-    mutating func decrease(in fruit: Fruit) throws
-    mutating func makeDrink(of ingredients: [Ingredient]) throws
+    mutating func checkStock(of ingredients: [Ingredient]) -> Bool
+    mutating func makeDrink(of ingredients: [Ingredient])
+    func showStockFruit() -> [Int]
 }
 
 struct FruitStore: Store {
@@ -22,60 +22,40 @@ struct FruitStore: Store {
         }
     }
     
-    mutating func increase(in fruit: Fruit) throws {
-        guard let value = inventory[fruit] else {
-            throw JuiceMakerError.notFindFruit
-        }
-        
-        self.inventory[fruit] = value + 1
+    mutating func makeDrink(of ingredients: [Ingredient]) {
+        startMakingJuice(of: ingredients)
     }
     
-    mutating func decrease(in fruit: Fruit) throws {
-        guard let value = inventory[fruit] else {
-            throw JuiceMakerError.notFindFruit
-        }
-        
-        guard value > 0 else {
-            throw JuiceMakerError.notDecrease
-        }
-        
-        self.inventory[fruit] = value - 1
+    mutating func checkStock(of ingredients: [Ingredient]) -> Bool {
+        return ingredients.filter { hasStock(of: $0) }.count == ingredients.count
     }
     
-    mutating func makeDrink(of ingredients: [Ingredient]) throws {
-        try checkStock(of: ingredients)
-        try startMakingJuice(of: ingredients)
-    }
-    
-    private func checkStock(of ingredients: [Ingredient]) throws {
-        try ingredients.forEach { ingredient in
-            try isEnough(of: ingredient)
-        }
-    }
-    
-    private func isEnough(of ingredient: Ingredient) throws {
+    private func hasStock(of ingredient: Ingredient) -> Bool {
         let fruit = ingredient.fruit
         let number = ingredient.number
-        
+
         guard let value = inventory[fruit], value - number >= 0 else {
-            throw JuiceMakerError.notEnough
+            return false
         }
-    }
-    
-    mutating private func startMakingJuice(of ingredients: [Ingredient]) throws {
-        try ingredients.forEach { ingredient in
-            try use(ingredient)
-        }
-    }
-    
-    mutating private func use(_ ingredient: Ingredient) throws {
-        let fruit = ingredient.fruit
-        let number = ingredient.number
         
+        return true
+    }
+    
+    mutating private func startMakingJuice(of ingredients: [Ingredient]) {
+        ingredients.forEach { ingredient in
+            makeJuice(in: ingredient.fruit, number: ingredient.number)
+        }
+    }
+    
+    mutating private func makeJuice(in fruit: Fruit, number: Int)  {
         guard let value = inventory[fruit] else {
-            throw JuiceMakerError.notFindFruit
+            return
         }
         
         self.inventory[fruit] = value - number
+    }
+    
+    func showStockFruit() -> [Int] {
+        return Fruit.allCases.map { inventory[$0] ?? 0 }
     }
 }
